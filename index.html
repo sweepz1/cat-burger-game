@@ -3,153 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>🐱 Purrsuit of the Burger 🍔</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      image-rendering: pixelated;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      background: #0a0a1a;
-      overflow: hidden;
-      touch-action: none;
-      user-select: none;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Press Start 2P', monospace;
-      color: #fff;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: pixelated; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100%; background: #0a0a1a; overflow: hidden; touch-action: none; user-select: none; }
+    body { display: flex; flex-direction: column; align-items: center; font-family: 'Press Start 2P', monospace; color: #fff; }
 
     /* --- UI ELEMENTS --- */
-    #title-screen {
-      text-align: center;
+    #title-screen { text-align: center; position: absolute; z-index: 10; top: 20%; width: 100%; }
+    #title-screen h1 { font-size: clamp(14px, 5vw, 24px); color: #ffdd57; text-shadow: 3px 3px #b35000; margin-bottom: 30px; line-height: 1.6; }
+    
+    .pixel-btn { font-family: 'Press Start 2P'; font-size: 14px; background: #ffdd57; color: #000; border: 4px solid #b35000; padding: 15px 25px; cursor: pointer; }
+    
+    #game-wrapper { position: relative; display: none; width: 100%; height: 100%; }
+    #hud { position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.5); color: #ffdd57; z-index: 5; font-size: 10px; }
+
+    /* --- MOBILE CONTROLS --- */
+    #mobile-controls {
       position: absolute;
-      z-index: 10;
-      padding: 20px;
+      bottom: 20px;
+      left: 0;
       width: 100%;
-    }
-
-    #title-screen h1 {
-      font-size: clamp(14px, 5vw, 24px);
-      color: #ffdd57;
-      text-shadow: 3px 3px #b35000, 6px 6px #000;
-      margin-bottom: 20px;
-      line-height: 1.6;
-      animation: pulse 1.2s infinite alternate;
-    }
-
-    .pixel-btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(10px, 2.5vw, 14px);
-      background: #ffdd57;
-      color: #000;
-      border: 4px solid #b35000;
-      padding: 15px 25px;
-      cursor: pointer;
-      margin: 10px;
-    }
-
-    .pixel-btn:hover {
-      background: #fff;
-    }
-
-    #game-wrapper {
-      position: relative;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-    }
-
-    #hud {
       display: flex;
       justify-content: space-between;
-      width: 100%;
-      max-width: 800px;
-      padding: 15px;
-      background: #111;
-      border-bottom: 3px solid #333;
-      color: #ffdd57;
+      padding: 0 20px;
+      z-index: 20;
     }
-
-    #canvas-container {
-      position: relative;
-      flex: 1;
-      width: 100%;
+    .d-pad { display: flex; gap: 15px; }
+    .touch-btn {
+      width: 70px;
+      height: 70px;
+      background: rgba(255, 221, 87, 0.3);
+      border: 3px solid #ffdd57;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    canvas {
-      background: #1a1a2e;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    /* --- LEADERBOARD & MODALS --- */
-    #save-modal, #lb-panel {
-      position: fixed;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.9);
-      z-index: 100;
-      padding: 20px;
-    }
-
-    #username-input {
-      font-family: 'Press Start 2P';
-      font-size: 18px;
-      padding: 15px;
-      background: #000;
+      font-size: 24px;
       color: #ffdd57;
-      border: 3px solid #ffdd57;
-      text-align: center;
-      margin: 20px 0;
     }
+    .touch-btn:active { background: rgba(255, 221, 87, 0.6); }
 
-    #lb-table {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 20px;
-      border-collapse: collapse;
+    /* --- MODALS --- */
+    #save-modal, #lb-panel {
+      position: fixed; inset: 0; display: none; flex-direction: column; 
+      align-items: center; justify-content: center; background: rgba(0,0,0,0.9); z-index: 100;
     }
-
-    #lb-table td {
-      padding: 12px;
-      border-bottom: 1px solid #333;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
+    #username-input { font-family: 'Press Start 2P'; padding: 15px; background: #000; color: #ffdd57; border: 3px solid #ffdd57; text-align: center; margin-bottom: 20px; }
+    #lb-table { width: 90%; max-width: 400px; margin: 20px 0; border-collapse: collapse; }
+    #lb-table td { padding: 10px; border-bottom: 1px solid #333; font-size: 10px; }
   </style>
 </head>
 <body>
 
 <div id="title-screen">
-  <h1>🐱 CAT BURGER:<br>THE FINAL PURRSUIT 🍔</h1>
+  <h1>🐱 CAT BURGER 🍔</h1>
   <button class="pixel-btn" onclick="startGame()">START GAME</button>
-  <button class="pixel-btn" style="background:#444; color:#fff;" onclick="openLeaderboard()">LEADERBOARD</button>
+  <button class="pixel-btn" style="background:#444; color:#fff; margin-top:10px;" onclick="openLeaderboard()">SCORES</button>
 </div>
 
 <div id="game-wrapper">
@@ -157,191 +69,169 @@
     <span>SCORE: <span id="score-val">0</span></span>
     <span>LIVES: <span id="lives-val">3</span></span>
   </div>
-  <div id="canvas-container">
-    <canvas id="game-canvas" width="800" height="450"></canvas>
+  
+  <canvas id="game-canvas"></canvas>
+
+  <div id="mobile-controls">
+    <div class="d-pad">
+      <div class="touch-btn" id="btn-left">◀</div>
+      <div class="touch-btn" id="btn-right">▶</div>
+    </div>
+    <div class="touch-btn" id="btn-jump">▲</div>
   </div>
 </div>
 
 <div id="save-modal">
-  <h2 style="color:#ffdd57">GAME OVER!</h2>
-  <h3 id="final-score">SCORE: 0</h3>
-  <input type="text" id="username-input" maxlength="10" placeholder="ENTER NAME">
+  <h2 style="color:#ffdd57">GAME OVER</h2>
+  <h3 id="final-score" style="margin: 20px 0;">SCORE: 0</h3>
+  <input type="text" id="username-input" maxlength="10" placeholder="NAME">
   <button class="pixel-btn" onclick="submitScore()">SAVE SCORE</button>
 </div>
 
 <div id="lb-panel">
-  <h2 style="color:#ffdd57">TOP CATS</h2>
-  <table id="lb-table">
-    <tbody id="lb-body"></tbody>
-  </table>
+  <h2 style="color:#ffdd57">LEADERBOARD</h2>
+  <table id="lb-table"><tbody id="lb-body"></tbody></table>
   <button class="pixel-btn" onclick="closeLeaderboard()">CLOSE</button>
 </div>
 
 <script>
-/**
- * 1. BACKEND LOGIC
- * Connects to your api/scores.js on Vercel
- */
+// --- LEADERBOARD API ---
 const API_URL = '/api/scores';
 let lastScore = 0;
 
 async function openLeaderboard() {
-    document.getElementById('lb-panel').style.display = 'flex';
-    const body = document.getElementById('lb-body');
-    body.innerHTML = 'Loading...';
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        body.innerHTML = data.map((s, i) => `
-            <tr>
-                <td>${i+1}. ${s.name}</td>
-                <td style="text-align:right">${s.score}</td>
-            </tr>
-        `).join('');
-    } catch (e) { body.innerHTML = 'Error loading scores.'; }
+  document.getElementById('lb-panel').style.display = 'flex';
+  const body = document.getElementById('lb-body');
+  body.innerHTML = 'Loading...';
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    body.innerHTML = data.map((s, i) => `<tr><td>${i+1}. ${s.name}</td><td style="text-align:right">${s.score}</td></tr>`).join('');
+  } catch (e) { body.innerHTML = 'Offline'; }
 }
 
 function closeLeaderboard() { document.getElementById('lb-panel').style.display = 'none'; }
 
 async function submitScore() {
-    const name = document.getElementById('username-input').value.toUpperCase() || 'CAT';
-    await fetch(API_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ name, score: lastScore })
-    });
-    document.getElementById('save-modal').style.display = 'none';
-    openLeaderboard();
+  const name = document.getElementById('username-input').value.toUpperCase() || 'CAT';
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ name, score: lastScore })
+  });
+  document.getElementById('save-modal').style.display = 'none';
+  openLeaderboard();
 }
 
-/**
- * 2. GAME ENGINE
- */
+// --- GAME CORE ---
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
+let score = 0, lives = 3, gameState = 'title', camX = 0;
 
-let score = 0;
-let lives = 3;
-let gameState = 'title';
-let camX = 0;
-
-const player = {
-    x: 100,
-    y: 300,
-    w: 32,
-    h: 32,
-    vx: 0,
-    vy: 0,
-    jumps: 0,
-    facing: 1
-};
-
+const player = { x: 100, y: 300, w: 32, h: 32, vx: 0, vy: 0, jumps: 0 };
 const platforms = [];
-const enemies = [];
-const burger = { x: 4500, y: 300, w: 40, h: 40 };
+const burger = { x: 4000, y: 320 };
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
 
 function initGame() {
-    platforms.length = 0;
-    // Build the world
-    platforms.push({ x: 0, y: 400, w: 5000, h: 50, color: '#2d7a3a' }); // Ground
-    
-    // Add floating platforms
-    for (let i = 0; i < 30; i++) {
-        platforms.push({
-            x: 400 + i * 160,
-            y: 250 - Math.random() * 100,
-            w: 120,
-            h: 20,
-            color: '#4a3728'
-        });
-    }
+  platforms.length = 0;
+  platforms.push({ x: 0, y: canvas.height - 60, w: 5000, h: 60 }); // Floor
+  for(let i=0; i<30; i++) {
+    platforms.push({ x: 500 + i*180, y: canvas.height - 150 - Math.random()*150, w: 100, h: 20 });
+  }
 }
 
 function update() {
-    if (gameState !== 'playing') return;
+  if (gameState !== 'playing') return;
+  player.vy += 0.8; 
+  player.x += player.vx;
+  player.y += player.vy;
 
-    // Physics
-    player.vy += 0.8; // Gravity
-    player.x += player.vx;
-    player.y += player.vy;
+  // Floor collision
+  if (player.y + player.h > canvas.height - 60) {
+    player.y = canvas.height - 60 - player.h;
+    player.vy = 0;
+    player.jumps = 2;
+  }
 
-    // Ground Collision
-    if (player.y > 368) {
-        player.y = 368;
-        player.vy = 0;
-        player.jumps = 2;
-    }
+  // Follow player
+  camX = player.x - canvas.width / 4;
 
-    // Camera following
-    camX = player.x - 200;
-
-    // Check Win
-    if (player.x > burger.x) {
-        alert("YOU GOT THE BURGER!");
-        location.reload();
-    }
+  if (player.x > burger.x) {
+    lastScore = score + 500;
+    document.getElementById('final-score').innerText = "SCORE: " + lastScore;
+    document.getElementById('save-modal').style.display = 'flex';
+    gameState = 'over';
+  }
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.save();
-    ctx.translate(-camX, 0);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0,0,canvas.width, canvas.height);
+  
+  ctx.save();
+  ctx.translate(-camX, 0);
 
-    // Draw Platforms
-    platforms.forEach(p => {
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-    });
+  // Draw World
+  ctx.fillStyle = '#2d7a3a';
+  platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+  
+  ctx.font = "40px Arial";
+  ctx.fillText("🍔", burger.x, burger.y);
 
-    // Draw Burger
-    ctx.font = "40px Arial";
-    ctx.fillText("🍔", burger.x, burger.y);
+  // Draw Cat
+  ctx.fillStyle = "#ffdd57";
+  ctx.fillRect(player.x, player.y, player.w, player.h);
+  ctx.fillStyle = "#000";
+  ctx.fillRect(player.x + 20, player.y + 8, 4, 4); // Eye
 
-    // Draw Cat
-    ctx.fillStyle = "#ffdd57";
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-    // Ears
-    ctx.fillRect(player.x, player.y - 8, 8, 8);
-    ctx.fillRect(player.x + 24, player.y - 8, 8, 8);
-    // Eyes
-    ctx.fillStyle = "#000";
-    ctx.fillRect(player.x + 6, player.y + 8, 4, 4);
-    ctx.fillRect(player.x + 22, player.y + 8, 4, 4);
-
-    ctx.restore();
-
-    document.getElementById('score-val').innerText = score;
-    document.getElementById('lives-val').innerText = lives;
+  ctx.restore();
+  document.getElementById('score-val').innerText = score;
 }
 
 function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
+  update();
+  draw();
+  if(gameState === 'playing') requestAnimationFrame(loop);
 }
 
 function startGame() {
-    document.getElementById('title-screen').style.display = 'none';
-    document.getElementById('game-wrapper').style.display = 'flex';
-    gameState = 'playing';
-    initGame();
-    loop();
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('game-wrapper').style.display = 'block';
+  gameState = 'playing';
+  initGame();
+  loop();
 }
 
-window.addEventListener('keydown', e => {
-    if (e.code === 'ArrowRight') player.vx = 5;
-    if (e.code === 'ArrowLeft') player.vx = -5;
-    if (e.code === 'Space' && player.jumps > 0) {
-        player.vy = -14;
-        player.jumps--;
-    }
-});
+// --- CONTROLS ---
+const handleInput = (type, active) => {
+  if(type === 'left') player.vx = active ? -6 : 0;
+  if(type === 'right') player.vx = active ? 6 : 0;
+  if(type === 'jump' && active && player.jumps > 0) { player.vy = -15; player.jumps--; }
+};
 
-window.addEventListener('keyup', e => {
-    if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') player.vx = 0;
-});
+// Touch events
+document.getElementById('btn-left').ontouchstart = (e) => { e.preventDefault(); handleInput('left', true); };
+document.getElementById('btn-left').ontouchend = () => handleInput('left', false);
+document.getElementById('btn-right').ontouchstart = (e) => { e.preventDefault(); handleInput('right', true); };
+document.getElementById('btn-right').ontouchend = () => handleInput('right', false);
+document.getElementById('btn-jump').ontouchstart = (e) => { e.preventDefault(); handleInput('jump', true); };
 
+// Keyboard
+window.onkeydown = (e) => {
+  if(e.code === 'ArrowLeft') handleInput('left', true);
+  if(e.code === 'ArrowRight') handleInput('right', true);
+  if(e.code === 'Space') handleInput('jump', true);
+};
+window.onkeyup = (e) => {
+  if(e.code === 'ArrowLeft' || e.code === 'ArrowRight') handleInput('left', false);
+};
 </script>
 </body>
 </html>
