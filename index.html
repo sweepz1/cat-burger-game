@@ -7,61 +7,176 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     
-    * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: pixelated; -webkit-tap-highlight-color: transparent; }
-    html, body { width: 100%; height: 100%; background: #0a0a1a; overflow: hidden; touch-action: none; user-select: none; }
-    body { display: flex; flex-direction: column; align-items: center; font-family: 'Press Start 2P', monospace; color: #fff; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      image-rendering: pixelated;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0a0a1a;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+    }
 
     /* --- UI ELEMENTS --- */
-    #title-screen { text-align: center; position: absolute; z-index: 10; top: 20%; width: 100%; }
-    #title-screen h1 { font-size: clamp(14px, 5vw, 24px); color: #ffdd57; text-shadow: 3px 3px #b35000; margin-bottom: 30px; line-height: 1.6; }
-    
-    .pixel-btn { font-family: 'Press Start 2P'; font-size: 14px; background: #ffdd57; color: #000; border: 4px solid #b35000; padding: 15px 25px; cursor: pointer; }
-    
-    #game-wrapper { position: relative; display: none; width: 100%; height: 100%; }
-    #hud { position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.5); color: #ffdd57; z-index: 5; font-size: 10px; }
+    #title-screen {
+      text-align: center;
+      position: absolute;
+      z-index: 10;
+      padding: 20px;
+      width: 100%;
+      top: 20%;
+    }
 
-    /* --- MOBILE CONTROLS --- */
-    #mobile-controls {
+    #title-screen h1 {
+      font-size: clamp(14px, 5vw, 24px);
+      color: #ffdd57;
+      text-shadow: 3px 3px #b35000, 6px 6px #000;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .pixel-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(10px, 2.5vw, 14px);
+      background: #ffdd57;
+      color: #000;
+      border: 4px solid #b35000;
+      padding: 15px 25px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    #game-wrapper {
+      position: relative;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 15px;
+      background: rgba(17, 17, 17, 0.8);
+      border-bottom: 3px solid #333;
+      color: #ffdd57;
+      z-index: 5;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #1a1a2e, #0a0a1a);
+      display: block;
+    }
+
+    /* --- MOBILE CONTROLS (Your Original Setup) --- */
+    #touch-controls {
+      display: none; /* Changed to block via JS if on mobile */
       position: absolute;
       bottom: 20px;
       left: 0;
       width: 100%;
-      display: flex;
-      justify-content: space-between;
       padding: 0 20px;
+      justify-content: space-between;
       z-index: 20;
     }
-    .d-pad { display: flex; gap: 15px; }
+
+    .d-pad {
+      display: flex;
+      gap: 15px;
+    }
+
     .touch-btn {
-      width: 70px;
-      height: 70px;
-      background: rgba(255, 221, 87, 0.3);
-      border: 3px solid #ffdd57;
+      width: 65px;
+      height: 65px;
+      background: rgba(255, 221, 87, 0.2);
+      border: 3px solid rgba(255, 221, 87, 0.6);
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
+      color: rgba(255, 221, 87, 0.8);
+    }
+
+    .touch-btn:active {
+      background: rgba(255, 221, 87, 0.5);
+    }
+
+    /* --- LEADERBOARD & MODALS --- */
+    #save-modal, #lb-panel {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 100;
+      padding: 20px;
+    }
+
+    #username-input {
+      font-family: 'Press Start 2P';
+      font-size: 16px;
+      padding: 15px;
+      background: #000;
+      color: #ffdd57;
+      border: 3px solid #ffdd57;
+      text-align: center;
+      margin: 20px 0;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    #lb-table {
+      width: 100%;
+      max-width: 500px;
+      margin-top: 20px;
+      border-collapse: collapse;
+      color: #fff;
+    }
+
+    #lb-table td {
+      padding: 12px;
+      border-bottom: 1px solid #333;
+      font-size: 12px;
+    }
+
+    #lb-table tr:first-child td {
       color: #ffdd57;
     }
-    .touch-btn:active { background: rgba(255, 221, 87, 0.6); }
-
-    /* --- MODALS --- */
-    #save-modal, #lb-panel {
-      position: fixed; inset: 0; display: none; flex-direction: column; 
-      align-items: center; justify-content: center; background: rgba(0,0,0,0.9); z-index: 100;
-    }
-    #username-input { font-family: 'Press Start 2P'; padding: 15px; background: #000; color: #ffdd57; border: 3px solid #ffdd57; text-align: center; margin-bottom: 20px; }
-    #lb-table { width: 90%; max-width: 400px; margin: 20px 0; border-collapse: collapse; }
-    #lb-table td { padding: 10px; border-bottom: 1px solid #333; font-size: 10px; }
   </style>
 </head>
 <body>
 
 <div id="title-screen">
-  <h1>🐱 CAT BURGER 🍔</h1>
+  <h1>🐱 CAT BURGER:<br>THE FINAL PURRSUIT 🍔</h1>
   <button class="pixel-btn" onclick="startGame()">START GAME</button>
-  <button class="pixel-btn" style="background:#444; color:#fff; margin-top:10px;" onclick="openLeaderboard()">SCORES</button>
+  <button class="pixel-btn" style="background:#444; color:#fff;" onclick="openLeaderboard()">LEADERBOARD</button>
 </div>
 
 <div id="game-wrapper">
@@ -72,7 +187,7 @@
   
   <canvas id="game-canvas"></canvas>
 
-  <div id="mobile-controls">
+  <div id="touch-controls">
     <div class="d-pad">
       <div class="touch-btn" id="btn-left">◀</div>
       <div class="touch-btn" id="btn-right">▶</div>
@@ -82,156 +197,377 @@
 </div>
 
 <div id="save-modal">
-  <h2 style="color:#ffdd57">GAME OVER</h2>
-  <h3 id="final-score" style="margin: 20px 0;">SCORE: 0</h3>
-  <input type="text" id="username-input" maxlength="10" placeholder="NAME">
-  <button class="pixel-btn" onclick="submitScore()">SAVE SCORE</button>
+  <h2 style="color:#ffdd57">GAME OVER!</h2>
+  <h3 id="final-score-val" style="margin-top: 20px;">SCORE: 0</h3>
+  <input type="text" id="username-input" maxlength="10" placeholder="ENTER NAME">
+  <button class="pixel-btn" onclick="submitScore()">SAVE TO GLOBAL LIST</button>
 </div>
 
 <div id="lb-panel">
-  <h2 style="color:#ffdd57">LEADERBOARD</h2>
-  <table id="lb-table"><tbody id="lb-body"></tbody></table>
-  <button class="pixel-btn" onclick="closeLeaderboard()">CLOSE</button>
+  <h2 style="color:#ffdd57">TOP CATS</h2>
+  <table id="lb-table">
+    <tbody id="lb-body"></tbody>
+  </table>
+  <button class="pixel-btn" style="background:#444; color:#fff; border-color:#fff;" onclick="closeLeaderboard()">CLOSE</button>
 </div>
 
 <script>
-// --- LEADERBOARD API ---
+/**
+ * ==========================================
+ * 1. LEADERBOARD API LOGIC
+ * ==========================================
+ */
 const API_URL = '/api/scores';
-let lastScore = 0;
+let currentFinalScore = 0;
 
 async function openLeaderboard() {
   document.getElementById('lb-panel').style.display = 'flex';
   const body = document.getElementById('lb-body');
-  body.innerHTML = 'Loading...';
+  body.innerHTML = '<tr><td colspan="2" style="text-align:center;">Loading...</td></tr>';
+  
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
-    body.innerHTML = data.map((s, i) => `<tr><td>${i+1}. ${s.name}</td><td style="text-align:right">${s.score}</td></tr>`).join('');
-  } catch (e) { body.innerHTML = 'Offline'; }
+    if (data.length === 0) {
+      body.innerHTML = '<tr><td colspan="2" style="text-align:center;">No scores yet!</td></tr>';
+      return;
+    }
+    body.innerHTML = data.map((s, i) => `
+      <tr>
+        <td>${i+1}. ${s.name}</td>
+        <td style="text-align:right">${s.score}</td>
+      </tr>
+    `).join('');
+  } catch (e) { 
+    body.innerHTML = '<tr><td colspan="2" style="text-align:center;">Leaderboard Offline</td></tr>'; 
+  }
 }
 
-function closeLeaderboard() { document.getElementById('lb-panel').style.display = 'none'; }
+function closeLeaderboard() { 
+  document.getElementById('lb-panel').style.display = 'none'; 
+}
 
 async function submitScore() {
-  const name = document.getElementById('username-input').value.toUpperCase() || 'CAT';
-  await fetch(API_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ name, score: lastScore })
-  });
+  const name = document.getElementById('username-input').value.toUpperCase().trim() || 'ANON_CAT';
+  
   document.getElementById('save-modal').style.display = 'none';
-  openLeaderboard();
+  openLeaderboard(); // Show it immediately while saving in background
+
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, score: currentFinalScore })
+    });
+    // Refresh to show updated rank
+    setTimeout(openLeaderboard, 1000); 
+  } catch (err) {
+    console.error("Failed to save score", err);
+  }
 }
 
-// --- GAME CORE ---
+function triggerGameOver(finalScore) {
+  gameState = 'over';
+  currentFinalScore = finalScore;
+  document.getElementById('final-score-val').innerText = "FINAL SCORE: " + finalScore;
+  document.getElementById('save-modal').style.display = 'flex';
+}
+
+/**
+ * ==========================================
+ * 2. GAME ENGINE & PHYSICS
+ * ==========================================
+ */
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-let score = 0, lives = 3, gameState = 'title', camX = 0;
 
-const player = { x: 100, y: 300, w: 32, h: 32, vx: 0, vy: 0, jumps: 0 };
+let score = 0;
+let lives = 3;
+let gameState = 'title';
+let camX = 0;
+let frameCount = 0;
+
+const keys = { left: false, right: false, jump: false };
+
+const player = {
+  x: 100, y: 0, w: 32, h: 32,
+  vx: 0, vy: 0,
+  speed: 6, gravity: 0.8, jumpPower: -14,
+  jumps: 0, maxJumps: 2,
+  facing: 1
+};
+
 const platforms = [];
-const burger = { x: 4000, y: 320 };
+const enemies = [];
+const particles = [];
+const burger = { x: 5000, y: 0, w: 40, h: 40 };
 
-function resize() {
+function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  // Floor level adjustment based on screen height
+  platforms[0] = { x: 0, y: canvas.height - 60, w: 6000, h: 60, type: 'floor' };
+  burger.y = canvas.height - 100;
 }
-window.addEventListener('resize', resize);
-resize();
+window.addEventListener('resize', resizeCanvas);
 
 function initGame() {
+  score = 0;
+  lives = 3;
+  player.x = 100;
+  player.y = canvas.height - 150;
+  player.vx = 0;
+  player.vy = 0;
   platforms.length = 0;
-  platforms.push({ x: 0, y: canvas.height - 60, w: 5000, h: 60 }); // Floor
-  for(let i=0; i<30; i++) {
-    platforms.push({ x: 500 + i*180, y: canvas.height - 150 - Math.random()*150, w: 100, h: 20 });
+  enemies.length = 0;
+  particles.length = 0;
+  camX = 0;
+
+  // Generate Level
+  resizeCanvas(); // Sets the floor
+
+  for (let i = 0; i < 40; i++) {
+    let px = 400 + (i * 150) + (Math.random() * 50);
+    let py = canvas.height - 150 - (Math.random() * 120);
+    platforms.push({ x: px, y: py, w: 120, h: 20, type: 'plat' });
+
+    // 30% chance to spawn an enemy on a platform
+    if (Math.random() > 0.7) {
+      enemies.push({
+        x: px + 40, y: py - 24, w: 24, h: 24,
+        vx: -2, startX: px, range: 80
+      });
+    }
+  }
+}
+
+function spawnParticles(x, y, color) {
+  for (let i = 0; i < 10; i++) {
+    particles.push({
+      x: x, y: y,
+      vx: (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 8,
+      life: 1, color: color
+    });
   }
 }
 
 function update() {
   if (gameState !== 'playing') return;
-  player.vy += 0.8; 
+  frameCount++;
+
+  // --- Player Horizontal Movement ---
+  if (keys.left) { player.vx = -player.speed; player.facing = -1; }
+  else if (keys.right) { player.vx = player.speed; player.facing = 1; }
+  else { player.vx *= 0.8; } // Friction
+
   player.x += player.vx;
+
+  // --- Player Vertical Movement (Gravity & Collision) ---
+  player.vy += player.gravity;
   player.y += player.vy;
 
-  // Floor collision
-  if (player.y + player.h > canvas.height - 60) {
-    player.y = canvas.height - 60 - player.h;
-    player.vy = 0;
-    player.jumps = 2;
+  let grounded = false;
+
+  // Platform Collisions
+  for (let p of platforms) {
+    if (player.x < p.x + p.w && player.x + player.w > p.x &&
+        player.y + player.h > p.y && player.y + player.h < p.y + p.h + 10 &&
+        player.vy > 0) {
+      player.y = p.y - player.h;
+      player.vy = 0;
+      grounded = true;
+      player.jumps = player.maxJumps;
+    }
   }
 
-  // Follow player
-  camX = player.x - canvas.width / 4;
+  // --- Enemies ---
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    let e = enemies[i];
+    e.x += e.vx;
+    
+    // Patrol logic
+    if (e.x < e.startX - 20 || e.x > e.startX + e.range) {
+      e.vx *= -1;
+    }
 
-  if (player.x > burger.x) {
-    lastScore = score + 500;
-    document.getElementById('final-score').innerText = "SCORE: " + lastScore;
-    document.getElementById('save-modal').style.display = 'flex';
-    gameState = 'over';
+    // Player collision with enemy
+    if (player.x < e.x + e.w && player.x + player.w > e.x &&
+        player.y < e.y + e.h && player.y + player.h > e.y) {
+      
+      // Bop on head
+      if (player.vy > 0 && player.y + player.h < e.y + e.h / 2) {
+        player.vy = -10;
+        score += 100;
+        spawnParticles(e.x + e.w/2, e.y + e.h/2, '#ff5555');
+        enemies.splice(i, 1);
+      } else {
+        // Take damage
+        lives--;
+        spawnParticles(player.x + player.w/2, player.y + player.h/2, '#ffdd57');
+        player.x -= 50 * player.facing;
+        player.vy = -8;
+        if (lives <= 0) {
+          triggerGameOver(score);
+        }
+      }
+    }
   }
+
+  // --- Particles ---
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.05;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+
+  // --- Win Condition (Burger) ---
+  if (player.x + player.w > burger.x && player.y < burger.y + burger.h && player.y + player.h > burger.y) {
+    score += 1000;
+    triggerGameOver(score);
+  }
+
+  // --- Camera Follow ---
+  camX = player.x - canvas.width / 3;
+  if (camX < 0) camX = 0;
 }
 
 function draw() {
-  ctx.fillStyle = '#1a1a2e';
-  ctx.fillRect(0,0,canvas.width, canvas.height);
+  // Clear Background
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   ctx.save();
   ctx.translate(-camX, 0);
 
-  // Draw World
-  ctx.fillStyle = '#2d7a3a';
-  platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
-  
-  ctx.font = "40px Arial";
-  ctx.fillText("🍔", burger.x, burger.y);
+  // Draw Parallax Background (Stars/Clouds)
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  for(let i=0; i<50; i++) {
+    let bgX = (i * 200 + (frameCount * 0.2)) % 6000;
+    ctx.fillRect(bgX, (i * 37) % (canvas.height / 2), 3, 3);
+  }
 
-  // Draw Cat
+  // Draw Platforms
+  platforms.forEach(p => {
+    ctx.fillStyle = p.type === 'floor' ? '#2d7a3a' : '#4a3728';
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+    // Grass top
+    ctx.fillStyle = '#3eb54d';
+    ctx.fillRect(p.x, p.y, p.w, 6);
+  });
+
+  // Draw Enemies
+  enemies.forEach(e => {
+    ctx.fillStyle = '#ff5555';
+    ctx.fillRect(e.x, e.y, e.w, e.h);
+    // Angry Eyes
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(e.x + (e.vx > 0 ? 12 : 4), e.y + 4, 8, 4);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(e.x + (e.vx > 0 ? 16 : 4), e.y + 4, 4, 4);
+  });
+
+  // Draw Burger
+  ctx.font = "40px Arial";
+  ctx.fillText("🍔", burger.x, burger.y + 35);
+
+  // Draw Particles
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, 6, 6);
+    ctx.globalAlpha = 1.0;
+  });
+
+  // Draw Player (Cat)
   ctx.fillStyle = "#ffdd57";
   ctx.fillRect(player.x, player.y, player.w, player.h);
+  // Ears
+  ctx.fillRect(player.x + 2, player.y - 6, 8, 6);
+  ctx.fillRect(player.x + player.w - 10, player.y - 6, 8, 6);
+  // Eyes
   ctx.fillStyle = "#000";
-  ctx.fillRect(player.x + 20, player.y + 8, 4, 4); // Eye
+  let eyeOffset = player.facing === 1 ? 16 : 4;
+  ctx.fillRect(player.x + eyeOffset, player.y + 8, 4, 4);
+  ctx.fillRect(player.x + eyeOffset + 8, player.y + 8, 4, 4);
 
   ctx.restore();
+
+  // Update HUD
   document.getElementById('score-val').innerText = score;
+  document.getElementById('lives-val').innerText = lives;
 }
 
 function loop() {
   update();
   draw();
-  if(gameState === 'playing') requestAnimationFrame(loop);
+  if (gameState === 'playing') {
+    requestAnimationFrame(loop);
+  }
 }
 
 function startGame() {
   document.getElementById('title-screen').style.display = 'none';
-  document.getElementById('game-wrapper').style.display = 'block';
+  document.getElementById('game-wrapper').style.display = 'flex';
   gameState = 'playing';
+  
+  setupTouch(); // Initialize mobile controls if on mobile device
   initGame();
   loop();
 }
 
-// --- CONTROLS ---
-const handleInput = (type, active) => {
-  if(type === 'left') player.vx = active ? -6 : 0;
-  if(type === 'right') player.vx = active ? 6 : 0;
-  if(type === 'jump' && active && player.jumps > 0) { player.vy = -15; player.jumps--; }
-};
+/**
+ * ==========================================
+ * 3. CONTROLS (Keyboard & Mobile)
+ * ==========================================
+ */
 
-// Touch events
-document.getElementById('btn-left').ontouchstart = (e) => { e.preventDefault(); handleInput('left', true); };
-document.getElementById('btn-left').ontouchend = () => handleInput('left', false);
-document.getElementById('btn-right').ontouchstart = (e) => { e.preventDefault(); handleInput('right', true); };
-document.getElementById('btn-right').ontouchend = () => handleInput('right', false);
-document.getElementById('btn-jump').ontouchstart = (e) => { e.preventDefault(); handleInput('jump', true); };
+// Keyboard Listeners
+window.addEventListener('keydown', e => {
+  if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+  if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+  if ((e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') && player.jumps > 0) {
+    player.vy = player.jumpPower;
+    player.jumps--;
+    keys.jump = true;
+    spawnParticles(player.x + player.w/2, player.y + player.h, '#ffffff');
+  }
+});
 
-// Keyboard
-window.onkeydown = (e) => {
-  if(e.code === 'ArrowLeft') handleInput('left', true);
-  if(e.code === 'ArrowRight') handleInput('right', true);
-  if(e.code === 'Space') handleInput('jump', true);
-};
-window.onkeyup = (e) => {
-  if(e.code === 'ArrowLeft' || e.code === 'ArrowRight') handleInput('left', false);
-};
+window.addEventListener('keyup', e => {
+  if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+  if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = false;
+});
+
+// Original Touch Logic
+function setupTouch() {
+  // Detect if device supports touch
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.getElementById('touch-controls').style.display = 'flex';
+  }
+
+  const btnLeft = document.getElementById('btn-left');
+  const btnRight = document.getElementById('btn-right');
+  const btnJump = document.getElementById('btn-jump');
+
+  btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); keys.left = true; }, {passive: false});
+  btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); keys.left = false; }, {passive: false});
+
+  btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); keys.right = true; }, {passive: false});
+  btnRight.addEventListener('touchend', (e) => { e.preventDefault(); keys.right = false; }, {passive: false});
+
+  btnJump.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (player.jumps > 0) {
+      player.vy = player.jumpPower;
+      player.jumps--;
+      spawnParticles(player.x + player.w/2, player.y + player.h, '#ffffff');
+    }
+  }, {passive: false});
+}
+
 </script>
 </body>
 </html>
