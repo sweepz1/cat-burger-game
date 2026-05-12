@@ -153,7 +153,9 @@ async function openLeaderboard() {
 function closeLeaderboard() { document.getElementById('lb-panel').style.display = 'none'; }
 
 async function submitScore() {
-  const name = document.getElementById('username-input').value.toUpperCase() || 'CAT';
+  const raw = document.getElementById('username-input').value.toUpperCase().trim();
+  const name = raw || 'CAT';
+  localStorage.setItem('purrsuit_name', name);
   await fetch(API_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -165,7 +167,17 @@ async function submitScore() {
 
 function triggerLeaderboardFlow(finalScore) {
   currentFinalScore = finalScore;
+  const savedName = localStorage.getItem('purrsuit_name');
+  if (savedName) {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name: savedName, score: finalScore })
+    }).then(() => openLeaderboard());
+    return;
+  }
   document.getElementById('final-score-msg').innerText = "FINAL SCORE: " + finalScore;
+  document.getElementById('username-input').value = '';
   document.getElementById('save-modal').style.display = 'flex';
 }
 
