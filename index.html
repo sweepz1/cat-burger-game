@@ -107,7 +107,7 @@ const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 const GAME_W = 800, GAME_H = 450;
 
-const isTouchDevice = (("ontouchstart" in window) || navigator.maxTouchPoints > 0) && window.matchMedia("(pointer: coarse)").matches && window.innerWidth <= 900;
+const isTouchDevice = /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
 
 function resizeCanvas() {
   const container = document.getElementById('canvas-container');
