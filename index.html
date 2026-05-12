@@ -131,12 +131,6 @@
 <script>
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────
-const ADMIN_PASS = '1Abcdeghfjsalskdj213474987@#@#%^@*&()(*&^%0A';
-if (new URLSearchParams(window.location.search).get('admin') === ADMIN_PASS) {
-  document.getElementById('admin-panel').style.display = 'flex';
-  adminLoadScores();
-}
-
 async function adminLoadScores() {
   const body = document.getElementById('admin-scores-body');
   body.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
@@ -148,12 +142,12 @@ async function adminLoadScores() {
 }
 
 async function adminClearAll() {
-  await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'clear', pass: ADMIN_PASS }) });
+  await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'clear', pass: adminPass }) });
   adminLoadScores();
 }
 
 async function adminDelete(name) {
-  await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'delete', name, pass: ADMIN_PASS }) });
+  await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'delete', name, pass: adminPass }) });
   adminLoadScores();
 }
 // ─── CANVAS ────────────────────────────────────────────────────────────────
