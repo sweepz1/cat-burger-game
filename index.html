@@ -31,7 +31,8 @@
     #game-canvas { display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
 
     /* OVERLAY & LEADERBOARD MODALS */
-    #overlay, #save-modal, #lb-panel { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:100; padding:20px; text-align:center; }
+    #overlay, #save-modal { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:100; padding:20px; text-align:center; }
+    #lb-panel { position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:200; padding:20px; text-align:center; }
     #overlay h2, #save-modal h2, #lb-panel h2 { font-size:clamp(14px,4vw,22px); color:#ffdd57; margin-bottom:16px; text-shadow:3px 3px #000; }
     #overlay p, #save-modal p { font-size:clamp(6px,1.8vw,9px); color:#ccc; margin-bottom:8px; line-height:2; white-space:pre-line; }
     #overlay button, #save-modal button, #lb-panel button { font-family:'Press Start 2P',monospace; font-size:clamp(8px,2.2vw,11px); background:#ffdd57; color:#000; border:3px solid #b35000; padding:12px 22px; cursor:pointer; margin-top:16px; }
@@ -64,6 +65,12 @@
   </div>
 </div>
 
+<div id="lb-panel">
+  <h2>TOP CATS</h2>
+  <table id="lb-table"><tbody id="lb-body"></tbody></table>
+  <button onclick="closeLeaderboard()">CLOSE</button>
+</div>
+
 <div id="game-wrapper">
   <div id="hud">
     <span>SCORE: <span id="score-val">0</span></span>
@@ -84,12 +91,6 @@
       <p id="final-score-msg"></p>
       <input type="text" id="username-input" maxlength="10" placeholder="NAME">
       <button onclick="submitScore()">SAVE SCORE</button>
-    </div>
-
-    <div id="lb-panel">
-      <h2>TOP CATS</h2>
-      <table id="lb-table"><tbody id="lb-body"></tbody></table>
-      <button onclick="closeLeaderboard()">CLOSE</button>
     </div>
 
     <div id="touch-controls">
