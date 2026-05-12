@@ -150,6 +150,12 @@ async function adminDelete(name) {
   await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'delete', name, pass: adminPass }) });
   adminLoadScores();
 }
+// ─── ADMIN ────────────────────────────────────────────────────────────────
+let adminPass = '';
+if (new URLSearchParams(window.location.search).get('admin') === 'true') {
+  document.getElementById('admin-panel').style.display = 'flex';
+}
+
 // ─── CANVAS ────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
