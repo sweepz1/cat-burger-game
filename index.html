@@ -152,6 +152,21 @@ async function adminDelete(name) {
 }
 // ─── ADMIN ────────────────────────────────────────────────────────────────
 let adminPass = '';
+async function adminLogin() {
+  adminPass = document.getElementById('admin-password-input').value;
+  const res = await fetch('/api/admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'auth', pass: adminPass }) });
+  const data = await res.json();
+  if (data.ok) {
+    document.getElementById('admin-login').style.display = 'none';
+    const ctrl = document.getElementById('admin-controls');
+    ctrl.style.display = 'flex'; ctrl.style.flexDirection = 'column'; ctrl.style.alignItems = 'center';
+    adminLoadScores();
+  } else {
+    document.getElementById('admin-error').innerText = 'WRONG PASSWORD';
+  }
+}
+
+
 if (new URLSearchParams(window.location.search).get('admin') === 'true') {
   document.getElementById('admin-panel').style.display = 'flex';
 }
